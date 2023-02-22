@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.animate__animated.animate__fadeInDown {
+    --animate-duration: 2s;
+  }
+  .animate__animated.animate__fadeIn {
+    --animate-duration: 3s;
+  }
+  .animate__animated.animate__slideInDown {
+    --animate-duration: 1s;
+  }

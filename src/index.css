@@ -7,6 +7,6 @@
   .animate__animated.animate__fadeIn {
     --animate-duration: 3s;
   }
-  .animate__animated.animate__slideInDown {
-    --animate-duration: 1s;
+  .animate__animated.animate__fadeIn {
+    --animate-duration: 3s;
   }

@@ -1,12 +1,13 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import "../styles/movie.css";
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { AiFillStar } from "react-icons/ai";
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useParams } from 'react-router-dom';
 const Movie = () => {
     const { id } = useParams();
-    const [Movie, setMovie] = useState([])
+    const [currentMovieDetail, setMovie] = useState([])
     useEffect(() => async () => {
         const respone = await axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=6cf6a858208f01181f58cd16b0789d04&language=en-US&page=1`);
         console.log(respone.status);
@@ -15,31 +16,70 @@ const Movie = () => {
         window.screenTop(0, 0);
     }, [])
     return (
-        <div className='text-white max-w-7xl mx-auto  ' >
-            <div className='ml-4  flex justify-between ' >
-                <h1 className='text-3xl font-semibold my-2 ' >{Movie.original_title}</h1>
-                <div className=' grid grid-cols-1 items-center ' >
-                    <div className='flex items-center' >
-                        <AiFillStar className='text-yellow-500 mx-2 ' size={30} />
-                        <h4 className='text-xl font-medium italic  my-2 ' >{Movie.vote_average}</h4>
+        <div className="movie">
+            <div className="movie__intro">
+                <img className="movie__backdrop" src={`https://image.tmdb.org/t/p/original${currentMovieDetail ? currentMovieDetail.backdrop_path : ""}`} />
+            </div>
+            <div className="movie__detail">
+                <div className="movie__detailLeft">
+                    <div className="movie__posterBox">
+                        <img className="movie__poster" src={`https://image.tmdb.org/t/p/original${currentMovieDetail ? currentMovieDetail.poster_path : ""}`} />
                     </div>
                 </div>
+                <div className="movie__detailRight">
+                    <div className="movie__detailRightTop">
+                        <div className="movie__name">{currentMovieDetail ? currentMovieDetail.original_title : ""}</div>
+                        <div className="movie__tagline">{currentMovieDetail ? currentMovieDetail.tagline : ""}</div>
+                        <div className="movie__rating">
+                            {currentMovieDetail ? currentMovieDetail.vote_average : ""} <i class="fas fa-star" />
+                            <span className="movie__voteCount">{currentMovieDetail ? "(" + currentMovieDetail.vote_count + ") votes" : ""}</span>
+                        </div>
+                        <div className="movie__runtime">{currentMovieDetail ? currentMovieDetail.runtime + " mins" : ""}</div>
+                        <div className="movie__releaseDate">{currentMovieDetail ? "Release date: " + currentMovieDetail.release_date : ""}</div>
+                        <div className="movie__genres">
+                            {
+                                currentMovieDetail && currentMovieDetail.genres
+                                    ?
+                                    currentMovieDetail.genres.map(genre => (
+                                        <><span className="movie__genre" id={genre.id}>{genre.name}</span></>
+                                    ))
+                                    :
+                                    ""
+                            }
+                        </div>
+                    </div>
+                    <div className="movie__detailRightBottom">
+                        <div className="synopsisText">Synopsis</div>
+                        <div>{currentMovieDetail ? currentMovieDetail.overview : ""}</div>
+                    </div>
+
+                </div>
             </div>
-            <div className='grid lg:grid-flow-col gap-2   ' >
-                <LazyLoadImage width={`300px`} className='rounded-md' effect='blur' src={`https://image.tmdb.org/t/p/original${Movie && Movie.poster_path}`} alt="" />
-                <LazyLoadImage className='rounded-sm w-full ' effect='blur' src={`https://image.tmdb.org/t/p/original${Movie && Movie.backdrop_path}`} alt="" />
-            </div>
-            <div className='max-w-3xl  ' >
+            <div className="movie__links">
+                <div className="movie__heading">Useful Links</div>
                 {
-                    Movie && Movie.genres
-                        ?
-                        Movie.genres.map(gen => {
-                            return <div className='border-2 px-2 py-1 rounded-2xl mx-2 inline-block ' key={gen.id} >{gen.name}</div>
-                        }) : ""
-
+                    currentMovieDetail && currentMovieDetail.homepage && <a href={currentMovieDetail.homepage} target="_blank" style={{ textDecoration: "none" }}><p><span className="movie__homeButton movie__Button">Homepage <i className="newTab fas fa-external-link-alt"></i></span></p></a>
                 }
-                <p className='py-4' >{Movie && Movie.overview}</p>
-
+                {
+                    currentMovieDetail && currentMovieDetail.imdb_id && <a href={"https://www.imdb.com/title/" + currentMovieDetail.imdb_id} target="_blank" style={{ textDecoration: "none" }}><p><span className="movie__imdbButton movie__Button">IMDb<i className="newTab fas fa-external-link-alt"></i></span></p></a>
+                }
+            </div>
+            <div className="movie__heading">Production companies</div>
+            <div className="movie__production">
+                {
+                    currentMovieDetail && currentMovieDetail.production_companies && currentMovieDetail.production_companies.map(company => (
+                        <>
+                            {
+                                company.logo_path
+                                &&
+                                <span className="productionCompanyImage">
+                                    <img className="movie__productionComapany" src={"https://image.tmdb.org/t/p/original" + company.logo_path} />
+                                    <span>{company.name}</span>
+                                </span>
+                            }
+                        </>
+                    ))
+                }
             </div>
         </div>
     )
